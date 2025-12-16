@@ -60,6 +60,7 @@ For a more traditional SSH experience, I set up terminal access on my client mac
 **Installation:**
 ```bash
 # Install cloudflared on your client machine
+winget install --id Cloudflare.cloudflared
 # (Installation method varies by OS)
 ```
 
