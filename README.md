@@ -1,1 +1,107 @@
-I bought a raspberry pi and i bought a domain also from cloudflare and i decided to connect it to the outside world so that i can ssh into my pi from anywhere anytime in the world so first i obviously created a tunnel that allows connection from my raspberry pi through my domain that i bought and i configured that tunnel to accept ssh connections but before that i had to make sure that my ip address of my raspberry pi has to be static so that in case of any power failure or network issues my ip does not change and i can make that tunnel route permanent and while configuring the tunnel as well i was configured the tunnel through docker and i make sure that it restart always so that it doesn't have to be re connected after a restart and then after successfully configuring the tunnel with a static ip i went to create an application where i have configured a policy to allow ssh connections from the email address that i plan to use for accessing the ssh connection as it requires a otp code to be sent to that particular registered mails for verification and i have added browser rendering to be ssh and vola i have made a connection now i can just go to that address and enter my email and verify myself with the otp i am able to login to my pi but it was a browser version i wanted it to access from my termial so i installed cloduflare in my client machine and i have authenticated my self through cloduflare access cloudflared access ssh-gen --hostname ssh.yourdomain.com just used ssh and my user name @ my domain i was redirected to a web page that verifies with the registered mail and i was able to access my pi through terminal.
+# Secure SSH Access to Raspberry Pi via Cloudflare Tunnel
+
+This guide documents the process of setting up secure remote SSH access to a Raspberry Pi from anywhere in the world using Cloudflare Tunnel and Cloudflare Access.
+
+## Overview
+
+This setup allows you to:
+- SSH into your Raspberry Pi from any location
+- Avoid exposing your home IP address or opening router ports
+- Secure access with email-based OTP verification
+- Access via both browser and terminal
+
+## Prerequisites
+
+- Raspberry Pi with SSH enabled
+- Domain name registered through Cloudflare
+- Docker installed on Raspberry Pi
+- Cloudflare account
+
+## Setup Process
+
+### 1. Configure Static IP Address
+
+Before setting up the tunnel, I assigned a static IP address to my Raspberry Pi. This ensures that the device maintains the same local IP address even after power failures or network disruptions, making the tunnel configuration permanent and reliable.
+
+### 2. Install and Configure Cloudflare Tunnel
+
+I set up a Cloudflare Tunnel to create a secure connection between my Raspberry Pi and the outside world through my Cloudflare-registered domain.
+
+**Docker Configuration:**
+The tunnel was configured to run as a Docker container with the `restart: always` policy. This ensures the tunnel automatically reconnects after system restarts without manual intervention.
+
+**Tunnel Setup:**
+- Created a tunnel in the Cloudflare dashboard
+- Configured the tunnel to accept SSH connections
+- Linked the tunnel to my domain
+- Set up routing to forward SSH traffic to the Raspberry Pi's static IP
+
+### 3. Configure Cloudflare Access Policy
+
+To add an authentication layer, I created a Cloudflare Access application:
+
+1. **Access Policy:** Configured to allow SSH connections only from my registered email address
+2. **Authentication:** Email-based OTP verification ensures that only authorized users can access the SSH connection
+3. **Browser Rendering:** Set to SSH protocol to enable proper handling of SSH connections
+
+### 4. Browser-Based SSH Access
+
+After completing the configuration, I can access my Raspberry Pi through a web browser:
+
+1. Navigate to the configured domain (e.g., `https://ssh.yourdomain.com`)
+2. Enter the registered email address
+3. Verify identity using the OTP code sent to email
+4. Access the Pi through the browser-based SSH interface
+
+### 5. Terminal-Based SSH Access
+
+For a more traditional SSH experience, I set up terminal access on my client machine:
+
+**Installation:**
+```bash
+# Install cloudflared on your client machine
+# (Installation method varies by OS)
+```
+
+**Authentication:**
+```bash
+cloudflared access ssh-gen --hostname ssh.yourdomain.com
+```
+
+This command initiates the authentication flow:
+1. Opens a browser window for verification
+2. Prompts for email verification via OTP
+3. Generates SSH configuration upon successful authentication
+
+**Connecting via Terminal:**
+```bash
+ssh username@yourdomain.com
+```
+
+The authentication process triggers automatically, and after email verification, terminal access to the Raspberry Pi is established.
+
+## Benefits
+
+- **No Port Forwarding:** Eliminates the need to open ports on your home router
+- **Enhanced Security:** Email-based OTP adds a strong authentication layer
+- **Persistent Connection:** Docker restart policy ensures tunnel stays active
+- **Flexible Access:** Choose between browser or terminal-based SSH
+- **Static Configuration:** Fixed IP prevents connection issues after restarts
+
+## Notes
+
+- Keep your Cloudflare credentials secure
+- The tunnel runs continuously in the background via Docker
+- OTP verification is required for each new session
+- The static IP configuration should be backed up for disaster recovery
+
+## Troubleshooting
+
+- If the connection fails after a restart, verify the Docker container is running
+- Ensure the Raspberry Pi's static IP hasn't changed
+- Check Cloudflare Access logs for authentication issues
+- Verify the tunnel status in the Cloudflare dashboard
+
+---
+
+**Security Reminder:** Never share your OTP codes or Cloudflare credentials. This setup is designed for personal use and should be configured according to your security requirements.
